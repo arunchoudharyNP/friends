@@ -10,6 +10,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import RootNavigation from "./navigation/RootNavigation";
 import AuthReducers from "./store/reducers/AuthReducers";
 import ReduxThunk from "redux-thunk";
+import ChatReducers from "./store/reducers/ChatReducers";
 import { Provider as StoreProvider } from "react-redux";
 
 enableScreens();
@@ -19,6 +20,7 @@ export default function App() {
 
    const reducer = combineReducers({
     AuthReducer: AuthReducers,
+    ChatReducers: ChatReducers,
   });
 
   const store = createStore(reducer, applyMiddleware(ReduxThunk));
