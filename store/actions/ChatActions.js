@@ -15,11 +15,14 @@ export const addMessage = (message, dbName) => {
       message.user._id.toString(),
       message.user.name,
       dbName
-    );
-
-    console.log(result);
-
-    dispatch({ type: ADD_MESSAGE, message });
+    )
+      .then((data) => {
+        console.log(data);
+        dispatch({ type: ADD_MESSAGE, message });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 };
 
@@ -28,17 +31,19 @@ export const loadMessages = (name) => {
     const dbResult = await fetchMessages(name);
     console.log("DB result.............");
     // console.log(dbResult.rows._array);
-    const messages = dbResult.rows._array.map((data) => {
-      return {
-        _id: data.id,
-        createdAt: new Date(data.createdAt),
-        text: data.text,
-        user: {
-          _id: parseInt(data.userId),
-          name: data.userName,
-        },
-      };
-    }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const messages = dbResult.rows._array
+      .map((data) => {
+        return {
+          _id: data.id,
+          createdAt: new Date(data.createdAt),
+          text: data.text,
+          user: {
+            _id: parseInt(data.userId),
+            name: data.userName,
+          },
+        };
+      })
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     // console.log(messages);
 

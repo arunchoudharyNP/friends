@@ -3,10 +3,11 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("chats.db");
 
 const init = (dbName) => {
+  console.log(dbName)
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `create table if not exists ${dbName} (id TEXT NOT NULL, createdAt Text NOT NULL,text TEXT NOT NULL, userId TEXT NOT NULL , userName TEXT NOT NULL)`,
+        `create table if not exists ${dbName.replace(/\s/g, "")} (id TEXT NOT NULL UNIQUE, createdAt Text NOT NULL,text TEXT NOT NULL, userId TEXT NOT NULL , userName TEXT NOT NULL)`,
         [],
         () => {
           resolve();
