@@ -11,11 +11,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ChatActions from "../../store/actions/ChatActions";
 import CryptoJS, { AES } from "crypto-js";
 import { useDispatch, useSelector } from "react-redux";
+import * as Notifications from "expo-notifications";
 
 import init from "../../components/Helper/db";
 
 const ChatScreen = (props) => {
   const { id, docId, userName } = props.route.params;
+
+ const notified = useRef(true);
+ const sendFlag  = useRef(true);
 
   let messageFireStore = [];
   let storeMesseges = [];
@@ -88,6 +92,27 @@ const ChatScreen = (props) => {
     return flag;
   };
 
+  async function sendPushNotification(number) {
+    const message = {
+      to: "ExponentPushToken[Eu1-VVEHcw9W3DRiaPangI]",
+      sound: "default",
+      title: "New Messages",
+      body: `You have ${number} new messages from ${userName}`,
+      data: { someData: "goes here" },
+      badge: 1
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  }
+
   useEffect(() => {
     const unsubscribe = chatRef.onSnapshot((querySnapShot) => {
       messageFireStore = querySnapShot
@@ -104,7 +129,7 @@ const ChatScreen = (props) => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
       if (messageFireStore.length) {
-        if (storeMesseges  && !checkMessages(messageFireStore)) {
+        if (storeMesseges && !checkMessages(messageFireStore)) {
           console.log("Called");
           messageFireStore.forEach((data) => {
             dispatch(ChatActions.addMessage(data, id + userName));
@@ -116,6 +141,13 @@ const ChatScreen = (props) => {
                 doc.ref.delete();
               });
             });
+          } else {
+
+            if(notified.current && sendFlag.current ){
+              sendPushNotification(1);
+              notified.current = false;
+            }
+            
           }
 
           // console.log(currentMessageId);
@@ -143,6 +175,7 @@ const ChatScreen = (props) => {
   };
 
   const onSend = async (msg) => {
+    sendFlag.current = true;
     const writes = msg.map((m) => {
       currentMessageId.current = m._id;
       const encryptText = AES.encrypt(m.text, m._id).toString();

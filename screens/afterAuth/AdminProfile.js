@@ -14,25 +14,7 @@ const AdminProfile = (props) => {
   const [users, setusers] = useState([]);
   const roomsRef = db.collection("ServiceAccount").doc(docId);
 
-  let user;
 
-  // setusers(user);
-
-  // useEffect(() => {
-  //   const unsubscribe = roomsRef.onSnapshot((querySnapShot) => {
-  //     const usersFirestore = querySnapShot
-  //       .docChanges()
-  //       .filter(({ type }) => (type = "added"))
-  //       .map(({ doc }) => {
-  //         const userData = doc.id;
-  //         return { id };
-  //       })
-
-  //     setusers(usersFirestore);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
 
   const startChat = (id) => {
     console.log("id" + id);
